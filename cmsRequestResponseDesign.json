@@ -1,0 +1,328 @@
+{
+	"info": {
+		"description": "This is the API for get a list of all calendars in our CMS",
+		"title": "get_all_calendars"
+	},
+	"schemes": ["http"],
+	"path": {
+		"/calendar": {
+			"GET": {
+				
+			}
+		}
+	},
+	"response": {
+		"default": {
+			"statusCode": "200",
+			"body": {
+				"calendars": [
+					{
+						"id": "int",	//	id of the calendar
+						"name": "String",	//	name of the calendar
+					},
+					{
+						"id": "int",	//	id of the calendar
+						"name": "String",	//	name of the calendar
+					}
+				]
+			}
+		}
+	}
+}
+
+
+
+
+{
+	"info": {
+		"description": "This is the API for create a new calendar in our CMS",
+		"title": "create_calendar"
+	},
+	"schemes": ["http"],
+	"path": {
+		"/calendar": {
+			"POST": {
+				"name": "String",	//	name of the calendar
+				"duration": "int",	//	duration of each meetings in this calendar
+				"start time": "String",	//	start time of the first meeting in a day
+				"end time": "String"	//	end time of the last meeting in a day
+			}
+		}
+	},
+	"response": {
+		"default": {
+			"statusCode": "200"
+		}
+	}
+}
+
+
+
+
+{
+	"info": {
+		"description": "This is the API for delete a calendar in our CMS",
+		"title": "delete_calendar"
+	},
+	"schemes": ["http"],
+	"path": {
+		"/calendar": {
+			"DELETE": {
+				"id": "int"	//	the ID of the calendar that need to be deleted
+			}
+		}
+	},
+	"response": {
+		"default": {
+			"statusCode": "200"
+		}
+	}
+}
+
+
+
+
+{
+	"info": {
+		"description": "This is the API for load a calendar in our CMS",
+		"title": "load_calendar"
+	},
+	"schemes": ["http"],
+	"path": {
+		"/calendar/id": {
+			"GET": {
+				// Load all timeslots from start date to end date
+				// If start date or end date is empty string, means load from the first date/load until last date
+				"start date": "String",
+				"end date": "String"
+			}
+		}
+	},
+	"response": {
+		"default": {
+			"statusCode": "200",
+			"body": {
+				"timeslots": [
+					{
+						"start time": "String",	//	start time of the meeting
+						"duration": "int",	//	duration of the meeting
+						"status": "int",	//	status of the timeslot, -1: closed, 0: open for schedule, 1: scheduled
+						"person": "String",	//	persons' name
+						"location": "String"	//	location of the meeting
+					}
+				]
+			}
+		}
+	}
+}
+
+
+
+
+{
+	"info": {
+		"description": "This is the API for add day to a calendar",
+		"title": "add_day_to_calendar"
+	},
+	"schemes": ["http"],
+	"path": {
+		"/calendar/id": {
+			"POST": {
+				"date": "String"	//	the date to add to the calendar
+			}
+		}
+	},
+	"response": {
+		"default": {
+			"statusCode": "200"
+		}
+	}
+}
+
+
+
+
+{
+	"info": {
+		"description": "This is the API for remove day from a calendar",
+		"title": "remove_day_from_calendar"
+	},
+	"schemes": ["http"],
+	"path": {
+		"/calendar/id": {
+			"DELETE": {
+				"date": "String"	//	the date to remove from the calendar
+			}
+		}
+	},
+	"response": {
+		"default": {
+			"statusCode": "200"
+		}
+	}
+}
+
+
+
+
+{
+	"info": {
+		"description": "This is the API for close timeslots",
+		"title": "close_timeslot"
+	},
+	"schemes": ["http"],
+	"path": {
+		"/calendar/id": {
+			"PUT": {
+				// Depending on what we received, we could close timeslot accordingly
+				// If only date string is not empty, time and day of week are empty,
+				// it means we need to close all timeslots on that day, etc.
+				"date": "String",
+				"time": "String",
+				"day of week": "String"
+			}
+		}
+	},
+	"response": {
+		"default": {
+			"statusCode": "200"
+		}
+	}
+}
+
+
+
+
+{
+	"info": {
+		"description": "This is the API for schedule a meeting",
+		"title": "schedule_meeting"
+	},
+	"schemes": ["http"],
+	"path": {
+		"/calendar": {
+			"POST": {
+				"id": "int",	//	calendar id
+				"name": "String",	//	name of the calendar
+				"duration": "int",	//	duration of each meetings in this calendar
+				"start time": "String",	//	start time of the first meeting in a day
+				"end time": "String"	//	end time of the last meeting in a day
+
+			}
+		}
+	},
+	"response": {
+		"default": {
+			"statusCode": "200",
+			"body": {
+				"/timeslots": [
+					{
+						"start time": "String",	//	start time of the meeting
+						"duration": "int",	//	duration of the meeting
+						"status": "int",	//	status of the timeslot, -1: closed, 0: open for schedule, 1: scheduled
+						"person": "String",	//	persons' name
+						"location": "String"	//	location of the meeting
+					}
+				]
+			}
+		}
+	}
+}
+
+
+
+
+{
+	"info": {
+		"description": "This is the API for cancel a meeting",
+		"title": "cancel_meeting"
+	},
+	"schemes": ["http"],
+	"path": {
+		"/calendar": {
+			"DELETE": {
+				"id": "int"	//	the id remove from the calendar, remove the meeting as well
+			}
+		}
+	},
+	"response": {
+		"default": {
+			"statusCode": "200"
+		}
+	}
+}
+
+
+
+
+{
+	"info": {
+		"description": "This is the API for create a new calendar in our CMS",
+		"title": "show_daily_view"
+	},
+	"schemes": ["http"],
+	"path": {
+		"/calendar/id": {
+			"GET": {
+				"month": "String",	// get the month from calendar
+				"day of week": "String"   //    get the day from calendar
+			}
+		}
+	},
+	"response": {
+		"default": {
+			"statusCode": "200",
+			"body": {
+				"/timeslots": [
+					{
+						"start time": "String",	//	start time of the meeting
+						"duration": "int",	//	duration of the meeting
+						"status": "int",	//	status of the timeslot, -1: closed, 0: open for schedule, 1: scheduled
+						"person": "String",	//	persons' name
+						"location": "String"	//	location of the meeting
+					}
+				]
+			}
+		}
+	}
+}
+
+
+
+
+
+{
+	"info": {
+		"description": "This is the API for create a new calendar in our CMS",
+		"title": "show_monthly_view"
+	},
+	"schemes": ["http"],
+	"path": {
+		"/calendar/id": {
+			"GET": {
+				"month": "String",  // get the month from calendar
+				"day of week": null    //  get the null value for day from calendar 
+			}
+		}
+	},
+	"response": {
+		"default": {
+			"statusCode": "200",
+			"body": {
+				"/timeslots": [
+					{
+						"start time": "String",	//	start time of the meeting
+						"duration": "int",	//	duration of the meeting
+						"status": "int",	//	status of the timeslot, -1: closed, 0: open for schedule, 1: scheduled
+						"person": "String",	//	persons' name
+						"location": "String"	//	location of the meeting
+					}
+				]
+			}
+		}
+	}
+}
+
+
+
+
