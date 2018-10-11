@@ -200,14 +200,12 @@
 	},
 	"schemes": ["http"],
 	"path": {
-		"/calendar": {
-			"POST": {
-				"id": "int",	//	calendar id
-				"name": "String",	//	name of the calendar
-				"duration": "int",	//	duration of each meetings in this calendar
-				"start time": "String",	//	start time of the first meeting in a day
-				"end time": "String"	//	end time of the last meeting in a day
-
+		"/calendar/id": {
+			"PUT": {
+				"id": "int",	//	timeslot id
+				"status": "int",	//	for schedule, this should be 1
+				"person": "String",
+				"location": "String"
 			}
 		}
 	},
@@ -215,7 +213,7 @@
 		"default": {
 			"statusCode": "200",
 			"body": {
-				"/timeslots": [
+				"timeslot": [
 					{
 						"start time": "String",	//	start time of the meeting
 						"duration": "int",	//	duration of the meeting
@@ -239,9 +237,10 @@
 	},
 	"schemes": ["http"],
 	"path": {
-		"/calendar": {
-			"DELETE": {
-				"id": "int"	//	the id remove from the calendar, remove the meeting as well
+		"/calendar/id": {
+			"PUT": {
+				"id": "int",	//	the id of the timeslot that need to cancel
+				"status": "int"	//	for cancel, this should be 0
 			}
 		}
 	},
@@ -257,7 +256,7 @@
 
 {
 	"info": {
-		"description": "This is the API for create a new calendar in our CMS",
+		"description": "This is the API for show daily view in our CMS",
 		"title": "show_daily_view"
 	},
 	"schemes": ["http"],
@@ -273,7 +272,8 @@
 		"default": {
 			"statusCode": "200",
 			"body": {
-				"/timeslots": [
+				// return list of timeslots accordingly
+				"timeslots": [
 					{
 						"start time": "String",	//	start time of the meeting
 						"duration": "int",	//	duration of the meeting
@@ -293,7 +293,7 @@
 
 {
 	"info": {
-		"description": "This is the API for create a new calendar in our CMS",
+		"description": "This is the API for show monthly view in our CMS",
 		"title": "show_monthly_view"
 	},
 	"schemes": ["http"],
@@ -309,7 +309,8 @@
 		"default": {
 			"statusCode": "200",
 			"body": {
-				"/timeslots": [
+				// return list of timeslots accordingly
+				"timeslots": [
 					{
 						"start time": "String",	//	start time of the meeting
 						"duration": "int",	//	duration of the meeting
