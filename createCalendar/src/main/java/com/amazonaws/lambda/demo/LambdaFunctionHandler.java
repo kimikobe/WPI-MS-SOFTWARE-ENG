@@ -70,7 +70,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
             responseJson.put("exception", pex);
         }
         
-        createCalendar(context);
+        createCalendar(name, duration, start_time, end_time, start_date, end_date, context);
 
         logger.log(responseJson.toJSONString());
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
@@ -78,24 +78,27 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         writer.close();
     }
     
-    public void createCalendar(Context context) {
+    public void createCalendar(String name, int duration, String start_time, String end_time, String start_date, String end_date, Context context) {
     	LambdaLogger logger = context.getLogger();
-    	String currentTime = "unavailable";
+    	
     	try {
-    	      String url = "jdbc:mysql://HOSTNAME:3306";
-    	      String username = "USERNAME";
-    	      String password = "PASSWORD";
+    		String url = "jdbc:mysql://cmsdb.clnm8zsvchg3.us-east-2.rds.amazonaws.com:3306";
+    	    String username = "cmsAdmin";
+    	    String password = "cms:pass";
 
-    	      Connection conn = DriverManager.getConnection(url, username, password);
-    	      Statement stmt = conn.createStatement();
-    	      ResultSet resultSet = stmt.executeQuery("SELECT NOW()");
+    	    Connection conn = DriverManager.getConnection(url, username, password);
+    	    Statement stmt = conn.createStatement();
+//    	    ResultSet resultSet = stmt.executeQuery("SELECT NOW()");
+    	    
+    	    
+    	    
+    	    stmt.close();
+    	    conn.close();
 
-    	      logger.log("Successfully executed query.  Result: " + currentTime);
-
-    	    } catch (Exception e) {
-    	      e.printStackTrace();
-    	      logger.log("Caught exception: " + e.getMessage());
-    	    }
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	    logger.log("Caught exception: " + e.getMessage());
+    	}
     }
 
 }
