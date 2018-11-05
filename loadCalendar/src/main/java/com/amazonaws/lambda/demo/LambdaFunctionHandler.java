@@ -49,16 +49,39 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         JSONObject responseJson = new JSONObject();
         String responseCode = "200";
+        
+        String name = "";
+        String start_date = "";
+        String end_date = "";
 
         try {
 
         	JSONObject event = (JSONObject)parser.parse(reader);
+        	
+        	if (event.get("queryStringParameters") != null) {
+                JSONObject qps = (JSONObject)event.get("queryStringParameters");
+                if (qps.get("name") != null) {
+                	name = (String) qps.get("name");
+                }
+                if (qps.get("start_date") != null) {
+                	start_date = (String) qps.get("start_date");
+                }
+                if (qps.get("end_date") != null) {
+                	end_date = (String) qps.get("end_date");
+                }
+            }
+        	
             JSONObject responseBody = new JSONObject();
-            
-            JSONObject calendarList = loadCalendar(context);
-            
             responseBody.put("input", event.toJSONString());
-            responseBody.put("body", calendarList);
+            
+            if (name == "") {
+	            JSONObject calendarList = getCalendarList(context);
+	            responseBody.put("body", calendarList);
+            }
+            else {
+            	JSONObject timeslots = getTimeSlots(name, start_date, end_date, context);
+            	responseBody.put("body", timeslots);
+            }
 
             responseJson.put("isBase64Encoded", false);
             responseJson.put("statusCode", responseCode);
@@ -78,7 +101,71 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 
     
 
-    public JSONObject loadCalendar(Context context) {
+    private JSONObject getTimeSlots(String name, String start_date, String end_date, Context context) {
+    	LambdaLogger logger = context.getLogger();
+    	JSONObject rs = new JSONObject();
+    	
+    	try {
+    		String url = "jdbc:mysql://cmsdb.clnm8zsvchg3.us-east-2.rds.amazonaws.com:3306";
+    	    String username = "cmsAdmin";
+    	    String password = "cms:pass";
+
+    	    Connection conn = DriverManager.getConnection(url, username, password);
+    	    Statement stmt = conn.createStatement();
+
+    	    // Get calendar id
+    	    String calendarIdQuery = String.format("SELECT id FROM cms_db.Calendars WHERE name='%s'", name);
+    	    ResultSet resultSet = stmt.executeQuery(calendarIdQuery);
+    	    int calendarId = 0;
+    	    if (resultSet.next()) {
+    	    	calendarId = resultSet.getInt("id");
+    	    }
+    	    resultSet.close();
+    	    
+    	    //	Get all timeslots in the date range
+    	    String timeslotQuery = String.format("SELECT date, start_time, duration, status, person, location FROM cms_db.TimeSlots WHERE "
+    	    		+ "(calendarId = %d)", calendarId);
+    	    if (start_date != "") {
+    	    	timeslotQuery += String.format(" AND (date >= '%s')", start_date);
+    	    }
+    	    if (end_date != "") {
+    	    	timeslotQuery += String.format(" AND (date <= '%s')", end_date);
+    	    }
+    	    resultSet = stmt.executeQuery(timeslotQuery);
+    	    JSONArray timeslotList = new JSONArray();
+    	    while (resultSet.next()) {
+    	    	JSONObject timeslot = new JSONObject();
+    	    	String rs_date = resultSet.getString("date");
+    	    	int rs_start_time = resultSet.getInt("start_time");
+    	    	int rs_duration = resultSet.getInt("duration");
+    	    	int rs_status = resultSet.getInt("status");
+    	    	String rs_person = resultSet.getString("person");
+    	    	String rs_location = resultSet.getString("location");
+    	    	timeslot.put("date", rs_date);
+    	    	timeslot.put("start_time", rs_start_time);
+    	    	timeslot.put("duration", rs_duration);
+    	    	timeslot.put("status", rs_status);
+    	    	timeslot.put("person", rs_person);
+    	    	timeslot.put("location", rs_location);
+    	    	timeslotList.add(timeslot);
+    	    }
+    	    resultSet.close();
+    	    rs.put("timeslots", timeslotList);
+
+    	    stmt.close();
+    	    conn.close();
+    	    
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	    logger.log("Caught exception: " + e.getMessage());
+    	}
+    	
+		return rs;
+	}
+
+
+
+	public JSONObject getCalendarList(Context context) {
     	LambdaLogger logger = context.getLogger();
     	JSONObject rs = new JSONObject();
 
