@@ -25,10 +25,10 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         //	default value
         String name = "default";
         int duration = 20;
-        String start_time = "0800";
-        String end_time = "1700";
-        String start_date = "20180924";
-        String end_date = "20181004";
+        int start_time = 480;
+        int end_time = 17 * 60;
+        String start_date = "2018-09-24";
+        String end_date = "2018-10-04";
         
         try {
         	JSONObject event = (JSONObject)parser.parse(reader);
@@ -41,10 +41,10 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
                 	duration = Integer.parseInt((String) qps.get("duration"));
                 }
                 if ( qps.get("start_time") != null) {
-                	start_time = (String)qps.get("start_time");
+                	start_time = Integer.parseInt((String)qps.get("start_time"));
                 }
                 if ( qps.get("end_time") != null) {
-                	end_time = (String)qps.get("end_time");
+                	end_time = Integer.parseInt((String)qps.get("end_time"));
                 }
                 if ( qps.get("start_date") != null) {
                 	start_date = (String)qps.get("start_date");
@@ -54,12 +54,11 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
                 }
             }
 
-            String greeting = "name: " + name + ", duration: " + duration + ", start time: " + start_time + ", end time: " + end_time;
-
-
+            createCalendar(name, duration, start_time, end_time, start_date, end_date, context);
+            
             JSONObject responseBody = new JSONObject();
             responseBody.put("input", event.toJSONString());
-            responseBody.put("message", greeting);
+            responseBody.put("body", "Sucess");
 
             responseJson.put("isBase64Encoded", false);
             responseJson.put("statusCode", responseCode);
@@ -69,8 +68,6 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
             responseJson.put("statusCode", "400");
             responseJson.put("exception", pex);
         }
-        
-        createCalendar(name, duration, start_time, end_time, start_date, end_date, context);
 
         logger.log(responseJson.toJSONString());
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
@@ -78,7 +75,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         writer.close();
     }
     
-    public void createCalendar(String name, int duration, String start_time, String end_time, String start_date, String end_date, Context context) {
+    public void createCalendar(String name, int duration, int start_time, int end_time, String start_date, String end_date, Context context) {
     	LambdaLogger logger = context.getLogger();
     	
     	try {
@@ -90,6 +87,10 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    Statement stmt = conn.createStatement();
 //    	    ResultSet resultSet = stmt.executeQuery("SELECT NOW()");
     	    
+    	    //	Create new calendar
+    	    String newCalendar = String.format("INSERT INTO cms_db.Calendars (name, duration, start_time, end_time) VALUES ('%s', %d, %d, %d)",
+    	    		name, duration, start_time, end_time);
+    	    stmt.executeUpdate(newCalendar);
     	    
     	    
     	    stmt.close();
