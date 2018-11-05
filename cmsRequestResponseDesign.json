@@ -42,12 +42,14 @@
 	"path": {
 		"/createCalendar": {
 			"POST": {
-				"name": "String",	//	name of the calendar
-				"duration": "int",	//	duration of each meetings in this calendar
-				"start_time": "int",	//	start time of the first meeting in a day
-				"end_time": "int",	//	end time of the last meeting in a day
-				"start_date": "String",
-				"end_date": "String"
+				"body": {
+					"name": "String",	//	name of the calendar
+					"duration": "int",	//	duration of each meetings in this calendar
+					"start_time": "int",	//	start time of the first meeting in a day
+					"end_time": "int",	//	end time of the last meeting in a day
+					"start_date": "String",
+					"end_date": "String"
+				}
 			}
 		}
 	},
