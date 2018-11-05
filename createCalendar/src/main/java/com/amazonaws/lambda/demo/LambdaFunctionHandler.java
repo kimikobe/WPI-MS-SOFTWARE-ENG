@@ -2,6 +2,9 @@ package com.amazonaws.lambda.demo;
 
 import java.io.*;
 import java.sql.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -85,13 +88,34 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 
     	    Connection conn = DriverManager.getConnection(url, username, password);
     	    Statement stmt = conn.createStatement();
-//    	    ResultSet resultSet = stmt.executeQuery("SELECT NOW()");
     	    
     	    //	Create new calendar
     	    String newCalendar = String.format("INSERT INTO cms_db.Calendars (name, duration, start_time, end_time) VALUES ('%s', %d, %d, %d)",
     	    		name, duration, start_time, end_time);
     	    stmt.executeUpdate(newCalendar);
     	    
+    	    //	Get calendar id
+    	    String calendarIdQuery = String.format("SELECT id FROM cms_db.Calendars WHERE name='%s'", name);
+    	    ResultSet resultSet = stmt.executeQuery(calendarIdQuery);
+    	    int calendarId = 0;
+    	    if (resultSet.next()) {
+    	    	calendarId = resultSet.getInt("id");
+    	    }
+    	    resultSet.close();
+    	    
+    	    //	Create new time slots
+    	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d");
+    	    LocalDate startDate = LocalDate.parse(start_date, formatter);
+			LocalDate endDate = LocalDate.parse(end_date, formatter);
+			for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+				if (date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY) {
+					for (int time = start_time; time < end_time; time += duration) {
+						String newTimeslot = String.format("INSERT INTO cms_db.TimeSlots (date, start_time, duration, status, person, location, calendarId) "
+								+ "VALUES ('%s', %d, %d, %d, '%s', '%s', %d)", date, time, duration, 0, "", "", calendarId);
+						stmt.executeUpdate(newTimeslot);
+		    	    }
+				}
+			}
     	    
     	    stmt.close();
     	    conn.close();
