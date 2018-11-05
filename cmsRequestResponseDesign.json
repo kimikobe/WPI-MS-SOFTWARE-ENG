@@ -40,12 +40,14 @@
 	},
 	"schemes": ["http"],
 	"path": {
-		"/calendar": {
+		"/createCalendar": {
 			"POST": {
 				"name": "String",	//	name of the calendar
 				"duration": "int",	//	duration of each meetings in this calendar
-				"start time": "String",	//	start time of the first meeting in a day
-				"end time": "String"	//	end time of the last meeting in a day
+				"start_time": "int",	//	start time of the first meeting in a day
+				"end_time": "int",	//	end time of the last meeting in a day
+				"start_date": "String",
+				"end_date": "String"
 			}
 		}
 	},
@@ -66,9 +68,9 @@
 	},
 	"schemes": ["http"],
 	"path": {
-		"/calendar": {
+		"/deleteCalendar": {
 			"DELETE": {
-				"id": "int"	//	the ID of the calendar that need to be deleted
+				"name": "String"	//	the ID of the calendar that need to be deleted
 			}
 		}
 	},
