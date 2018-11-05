@@ -35,8 +35,9 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         
         try {
         	JSONObject event = (JSONObject)parser.parse(reader);
-            if (event.get("queryStringParameters") != null) {
-                JSONObject qps = (JSONObject)event.get("queryStringParameters");
+            if (event.get("body") != null) {
+                JSONObject qps = (JSONObject)parser.parse((String) event.get("body"));
+                logger.log(qps.toJSONString());
                 if ( qps.get("name") != null) {
                     name = (String)qps.get("name");
                 }
