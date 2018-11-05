@@ -93,12 +93,13 @@
 	},
 	"schemes": ["http"],
 	"path": {
-		"/calendar/id": {
+		"/loadCalendar": {
 			"GET": {
 				// Load all timeslots from start date to end date
 				// If start date or end date is empty string, means load from the first date/load until last date
-				"start date": "String",
-				"end date": "String"
+				"name": "String
+				"start_date": "String",
+				"end_date": "String"
 			}
 		}
 	},
