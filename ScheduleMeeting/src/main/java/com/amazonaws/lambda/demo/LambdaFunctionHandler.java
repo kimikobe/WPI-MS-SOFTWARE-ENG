@@ -25,8 +25,8 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         String responseCode = "200";
         
         //	default value
-        int id = 1;
-        int status = 1;
+        int id = 0;
+        int status = 0;
         String person = "";
         String location = "";
         
@@ -34,18 +34,18 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         	JSONObject event = (JSONObject)parser.parse(reader);
             
 
-                if ( event.get("id") != null) {
-                    id = Integer.parseInt((String)event.get("id"));
-                }
-                if ( event.get("status") != null) {
-                    status = Integer.parseInt((String)event.get("status"));
-                }
-                if ( event.get("person") != null) {
-                	person = (String)event.get("person");
-                }
-                if ( event.get("location") != null) {
-                	location = (String)event.get("location");
-                }
+            if ( event.get("id") != null) {
+                id = Integer.parseInt((String)event.get("id"));
+            }
+            if ( event.get("status") != null) {
+                status = Integer.parseInt((String)event.get("status"));
+            }
+            if ( event.get("person") != null) {
+            	person = (String)event.get("person");
+            }
+            if ( event.get("location") != null) {
+            	location = (String)event.get("location");
+            }
                 
             
 
