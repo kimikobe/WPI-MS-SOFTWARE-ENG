@@ -34,10 +34,10 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
                 JSONObject qps = (JSONObject)parser.parse((String) event.get("body"));
                 logger.log(qps.toJSONString());
                 if ( qps.get("id") != null) {
-                    id = (int)qps.get("id");
+                    id = Integer.parseInt((String)qps.get("id"));
                 }
                 if ( qps.get("status") != null) {
-                    status = (int)qps.get("status");
+                    status = Integer.parseInt((String)qps.get("status"));
                 }
                 
             }
@@ -75,7 +75,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    Statement stmt = conn.createStatement();
     	    
     	    //	Delete a selected meeting
-    	    String cancelMeeting = String.format("DELETE FROM cms_db.Calendars (id, status, context) VALUES ('%s', %s)",
+    	    String cancelMeeting = String.format("DELETE FROM cms_db.TimeSlots (id, status, context) VALUES ('%d', %d)",
     	    		id, status);
     	    stmt.executeUpdate(cancelMeeting);
     	    

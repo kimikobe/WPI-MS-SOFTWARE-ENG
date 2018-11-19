@@ -36,10 +36,10 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
                 JSONObject qps = (JSONObject)parser.parse((String) event.get("body"));
                 logger.log(qps.toJSONString());
                 if ( qps.get("id") != null) {
-                    id = (int)qps.get("id");
+                    id = Integer.parseInt((String)qps.get("id"));
                 }
                 if ( qps.get("status") != null) {
-                    status = (int)qps.get("status");
+                    status = Integer.parseInt((String)qps.get("status"));
                 }
                 if ( qps.get("person") != null) {
                 	person = (String)qps.get("person");
@@ -83,7 +83,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    Statement stmt = conn.createStatement();
     	    
     	    //	Create new meeting
-    	    String newMeeting = String.format("UPDATE cms_db.Calendars (id, status, person, location, context) VALUES ('%s', %s, %d, %d)",
+    	    String newMeeting = String.format("UPDATE cms_db.TimeSlots SET(id, status, person, location, context) VALUES ('%d', %d, %s, %s)",
     	    		id, status, person, location);
     	    stmt.executeUpdate(newMeeting);
     	    

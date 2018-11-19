@@ -68,7 +68,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    Statement stmt = conn.createStatement();
     	    
     	    //	Add a new Date to calendar
-    	    String DeleteDayFromCalendar = String.format("DELETE FROM AS cms_db.Calendars (date) VALUES (%d)",
+    	    String DeleteDayFromCalendar = String.format("DELETE FROM AS cms_db.TimeSlots (date) VALUES (%s)",
     	    		date);
     	    stmt.executeUpdate(DeleteDayFromCalendar);
     	    
