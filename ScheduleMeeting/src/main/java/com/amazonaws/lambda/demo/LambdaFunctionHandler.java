@@ -32,23 +32,22 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         
         try {
         	JSONObject event = (JSONObject)parser.parse(reader);
-            if (event.get("body") != null) {
-                JSONObject qps = (JSONObject)parser.parse((String) event.get("body"));
-                logger.log(qps.toJSONString());
-                if ( qps.get("id") != null) {
-                    id = Integer.parseInt((String)qps.get("id"));
+            
+
+                if ( event.get("id") != null) {
+                    id = Integer.parseInt((String)event.get("id"));
                 }
-                if ( qps.get("status") != null) {
-                    status = Integer.parseInt((String)qps.get("status"));
+                if ( event.get("status") != null) {
+                    status = Integer.parseInt((String)event.get("status"));
                 }
-                if ( qps.get("person") != null) {
-                	person = (String)qps.get("person");
+                if ( event.get("person") != null) {
+                	person = (String)event.get("person");
                 }
-                if ( qps.get("location") != null) {
-                	location = (String)qps.get("location");
+                if ( event.get("location") != null) {
+                	location = (String)event.get("location");
                 }
                 
-            }
+            
 
             scheduleMeeting(id, status, person, location, context);
             
@@ -83,8 +82,8 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    Statement stmt = conn.createStatement();
     	    
     	    //	Create new meeting
-    	    String newMeeting = String.format("UPDATE cms_db.TimeSlots SET(id, status, person, location, context) VALUES ('%d', %d, %s, %s)",
-    	    		id, status, person, location);
+    	    String newMeeting = String.format("UPDATE cms_db.TimeSlots SET status = %d, person = '%s', location = '%s' WHERE id = %d",
+    	    		status, person, location, id);
     	    stmt.executeUpdate(newMeeting);
     	    
     	    stmt.close();
