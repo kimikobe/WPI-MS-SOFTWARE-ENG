@@ -205,7 +205,7 @@
 	},
 	"schemes": ["http"],
 	"path": {
-		"/calendar/id": {
+		"/scheduleMeeting": {
 			"PUT": {
 				"id": "int",	//	timeslot id
 				"status": "int",	//	for schedule, this should be 1
@@ -242,10 +242,12 @@
 	},
 	"schemes": ["http"],
 	"path": {
-		"/calendar/id": {
+		"/scheduleMeeting": {
 			"PUT": {
-				"id": "int",	//	the id of the timeslot that need to cancel
-				"status": "int"	//	for cancel, this should be 0
+				"id": "int",	//	timeslot id
+				"status": "int",	//	for schedule, this should be 1
+				"person": "String",
+				"location": "String"
 			}
 		}
 	},
