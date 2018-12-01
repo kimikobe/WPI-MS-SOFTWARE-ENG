@@ -1,0 +1,4 @@
+#git ignore files list all the files you wish to 
+#ignore during the git procedures
+.classpath
+
