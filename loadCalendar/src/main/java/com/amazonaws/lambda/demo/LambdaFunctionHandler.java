@@ -159,7 +159,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    
     	} catch (Exception e) {
     	    logger.log("Caught exception: " + e.getMessage());
-    	    throw new Exception(e);
+    	    throw e;
     	}
     	
 		return rs;
@@ -200,7 +200,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    
     	} catch (Exception e) {
     	    logger.log("Caught exception: " + e.getMessage());
-    	    throw new Exception(e);
+    	    throw e;
     	}
 
     	return rs;
