@@ -152,9 +152,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     
     public void AddDayToCalendar(String date, int id, int start_time, int end_time, int duration, Context context) {
     	LambdaLogger logger = context.getLogger();
-    	logger.log(String.format("date: %s, id: %d, start time: %d, end time: %d, duration: %d", date, id, start_time, end_time, duration));
-    	
-    	
+    	    	
     	try {
     		String url = "jdbc:mysql://cmsdb.clnm8zsvchg3.us-east-2.rds.amazonaws.com:3306";
     	    String username = "cmsAdmin";
