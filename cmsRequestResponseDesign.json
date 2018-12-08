@@ -97,7 +97,7 @@
 			"GET": {
 				// Load all timeslots from start date to end date
 				// If start date or end date is empty string, means load from the first date/load until last date
-				"name": "String
+				"name": "String",
 				"start_date": "String",
 				"end_date": "String"
 			}
@@ -169,7 +169,7 @@
 
 
 
-
+// closeTimeSlot
 {
 	"info": {
 		"description": "This is the API for close timeslots",
@@ -177,14 +177,15 @@
 	},
 	"schemes": ["http"],
 	"path": {
-		"/calendar/id": {
+		"/closeTimeSlot": {
 			"PUT": {
 				// Depending on what we received, we could close timeslot accordingly
 				// If only date string is not empty, time and day of week are empty,
 				// it means we need to close all timeslots on that day, etc.
+				"name": "String"
 				"date": "String",
-				"time": "String",
-				"day of week": "String"
+				"time": "int",
+				"day of week": "int"			//	1=Sunday, 2=Monday, 3=Tuesday, 4=Wednesday, 5=Thursday, 6=Friday, 7=Saturday
 			}
 		}
 	},
