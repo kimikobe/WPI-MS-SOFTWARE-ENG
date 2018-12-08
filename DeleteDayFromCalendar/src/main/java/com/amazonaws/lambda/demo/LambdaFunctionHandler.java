@@ -73,7 +73,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     }
     
     
-    public JSONObject checkCalendar(String name, Context context) {
+    public JSONObject checkCalendar(String name, Context context) throws Exception {
     	LambdaLogger logger = context.getLogger();
     	JSONObject rs = new JSONObject();
 
@@ -105,14 +105,14 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    conn.close();
     	    
     	} catch (Exception e) {
-    	    e.printStackTrace();
     	    logger.log("Caught exception: " + e.getMessage());
+    	    throw e;
     	}
 
     	return rs;
     }
     
-    public boolean checkDateInTimeslot(int id, String date, Context context) {
+    public boolean checkDateInTimeslot(int id, String date, Context context) throws Exception {
     	LambdaLogger logger = context.getLogger();
 
     	try {
@@ -137,15 +137,15 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    conn.close();
     	    
     	} catch (Exception e) {
-    	    e.printStackTrace();
     	    logger.log("Caught exception: " + e.getMessage());
+    	    throw e;
     	}
     	
 		return true;
     	
     }
     
-    public void RemoveDayFromCalendar(String date, int id, Context context) {
+    public void RemoveDayFromCalendar(String date, int id, Context context) throws Exception {
     	LambdaLogger logger = context.getLogger();  	
     	
     	try {
@@ -164,8 +164,8 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    conn.close();
 
     	} catch (Exception e) {
-    	    e.printStackTrace();
     	    logger.log("Caught exception: " + e.getMessage());
+    	    throw e;
     	}
     }
 
