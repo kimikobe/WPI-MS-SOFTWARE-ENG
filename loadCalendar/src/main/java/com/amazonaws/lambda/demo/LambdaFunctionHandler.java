@@ -101,7 +101,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 
     
 
-    private JSONObject getTimeSlots(String name, String start_date, String end_date, Context context) {
+    private JSONObject getTimeSlots(String name, String start_date, String end_date, Context context) throws Exception {
     	LambdaLogger logger = context.getLogger();
     	JSONObject rs = new JSONObject();
     	
@@ -116,11 +116,13 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    // Get calendar id
     	    String calendarIdQuery = String.format("SELECT id FROM cms_db.Calendars WHERE name='%s'", name);
     	    ResultSet resultSet = stmt.executeQuery(calendarIdQuery);
-    	    int calendarId = 0;
+    	    int calendarId = -1;
     	    if (resultSet.next()) {
     	    	calendarId = resultSet.getInt("id");
     	    }
     	    resultSet.close();
+    	    
+    	    if (calendarId == -1) throw new Exception("Calendar does not exist!");
     	    
     	    //	Get all timeslots in the date range
     	    String timeslotQuery = String.format("SELECT date, start_time, duration, status, person, location FROM cms_db.TimeSlots WHERE "
@@ -156,8 +158,8 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    conn.close();
     	    
     	} catch (Exception e) {
-    	    e.printStackTrace();
     	    logger.log("Caught exception: " + e.getMessage());
+    	    throw new Exception(e);
     	}
     	
 		return rs;
@@ -165,7 +167,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 
 
 
-	public JSONObject getCalendarList(Context context) {
+	public JSONObject getCalendarList(Context context) throws Exception {
     	LambdaLogger logger = context.getLogger();
     	JSONObject rs = new JSONObject();
 
@@ -197,8 +199,8 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    conn.close();
     	    
     	} catch (Exception e) {
-    	    e.printStackTrace();
     	    logger.log("Caught exception: " + e.getMessage());
+    	    throw new Exception(e);
     	}
 
     	return rs;
