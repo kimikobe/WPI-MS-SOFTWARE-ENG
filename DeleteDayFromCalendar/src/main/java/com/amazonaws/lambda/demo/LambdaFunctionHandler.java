@@ -22,25 +22,42 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         
         //	default value
         String date = "";
-        
-        
+        String name = "";
+               
         try {
-        	JSONObject event = (JSONObject)parser.parse(reader);
-            if (event.get("body") != null) {
-                JSONObject qps = (JSONObject)parser.parse((String) event.get("body"));
-                logger.log(qps.toJSONString());
-                
-                if ( qps.get("date") != null) {
-                	date = (String)qps.get("date");
-                }
+        	JSONObject event = (JSONObject)parser.parse(reader);  
+            
+        	if (event.get("date") != null) {
+        		date = (String) event.get("date");
+            }
+        	 
+            if (event.get("name") != null) {
+            	name = (String) event.get("name");
+            }
+            
+            if (date.equals("") || name.equals("")) {
+            	throw new Exception("Input parameters error");
             }
 
-            DeleteDayFromCalendar(date, context);
+            JSONObject temp = checkCalendar(name, context);
+	        if (temp.get("calendar") == null) {
+	        	throw new Exception("Calendar not exist!");
+	        }
+	        temp = (JSONObject) temp.get("calendar");
+            int id = (int) temp.get("id");
+        	int start_time = (int) temp.get("start_time");
+        	int end_time = (int) temp.get("end_time");
+        	int duration = (int) temp.get("duration");
+        	
+			if (checkDateInTimeslot(id, date, context)){
+        		throw new Exception("Date already exist in calendar!");
+        	}
+	        
+	        RemoveDayFromCalendar(date, id, context);
             
             JSONObject responseBody = new JSONObject();
             responseBody.put("input", event.toJSONString());
-            responseBody.put("body", "Sucess");
-
+            
             responseJson.put("isBase64Encoded", false);
             responseJson.put("statusCode", responseCode);
             responseJson.put("body", responseBody.toString());  
@@ -50,14 +67,86 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
             responseJson.put("exception", pex);
         }
 
-        logger.log(responseJson.toJSONString());
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
         writer.write(responseJson.toJSONString());  
         writer.close();
     }
     
-    public void DeleteDayFromCalendar(String date, Context context) {
+    
+    public JSONObject checkCalendar(String name, Context context) {
     	LambdaLogger logger = context.getLogger();
+    	JSONObject rs = new JSONObject();
+
+    	try {
+    		String url = "jdbc:mysql://cmsdb.clnm8zsvchg3.us-east-2.rds.amazonaws.com:3306";
+    	    String username = "cmsAdmin";
+    	    String password = "cms:pass";
+
+    	    Connection conn = DriverManager.getConnection(url, username, password);
+    	    Statement stmt = conn.createStatement();
+
+    	    //	Get calendars name
+    	    String calendarIdQuery = String.format("SELECT id, start_time, end_time, duration FROM cms_db.Calendars WHERE name='%s'", name);
+    	    ResultSet resultSet = stmt.executeQuery(calendarIdQuery);
+
+    	    while (resultSet.next()) {
+    	    	JSONObject calendar = new JSONObject();
+    	    	
+    	    	calendar.put("id", resultSet.getInt("id"));   	    
+    	    	calendar.put("start_time", resultSet.getInt("start_time"));
+    	    	calendar.put("end_time", resultSet.getInt("end_time"));
+    	    	calendar.put("duration", resultSet.getInt("duration"));
+    	    	rs.put("calendar", calendar);
+    	    }
+    	    
+    	    resultSet.close();
+
+    	    stmt.close();
+    	    conn.close();
+    	    
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	    logger.log("Caught exception: " + e.getMessage());
+    	}
+
+    	return rs;
+    }
+    
+    public boolean checkDateInTimeslot(int id, String date, Context context) {
+    	LambdaLogger logger = context.getLogger();
+
+    	try {
+    		String url = "jdbc:mysql://cmsdb.clnm8zsvchg3.us-east-2.rds.amazonaws.com:3306";
+    	    String username = "cmsAdmin";
+    	    String password = "cms:pass";
+
+    	    Connection conn = DriverManager.getConnection(url, username, password);
+    	    Statement stmt = conn.createStatement();
+
+    	    String newDate = String.format("SELECT id FROM cms_db.TimeSlots WHERE "
+    	    		+ "calendarId = %d AND date = '%s'", id, date);
+    	    ResultSet resultSet = stmt.executeQuery(newDate);
+    	    
+    	    while (resultSet.next()) {
+    	    	return false;
+    	    }
+    	    
+    	    resultSet.close();
+    	    
+    	    stmt.close();
+    	    conn.close();
+    	    
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	    logger.log("Caught exception: " + e.getMessage());
+    	}
+    	
+		return true;
+    	
+    }
+    
+    public void RemoveDayFromCalendar(String date, int id, Context context) {
+    	LambdaLogger logger = context.getLogger();  	
     	
     	try {
     		String url = "jdbc:mysql://cmsdb.clnm8zsvchg3.us-east-2.rds.amazonaws.com:3306";
@@ -67,11 +156,9 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    Connection conn = DriverManager.getConnection(url, username, password);
     	    Statement stmt = conn.createStatement();
     	    
-    	    //	Add a new Date to calendar
-    	    String DeleteDayFromCalendar = String.format("DELETE FROM AS cms_db.TimeSlots (date) VALUES (%s)",
-    	    		date);
-    	    stmt.executeUpdate(DeleteDayFromCalendar);
     	    
+		    String newDate = String.format("DELETE FROM cms_db.TimeSlots WHERE date = '%s' AND calendarId = %d", date, id);
+		    stmt.executeUpdate(newDate);
     	    
     	    stmt.close();
     	    conn.close();
