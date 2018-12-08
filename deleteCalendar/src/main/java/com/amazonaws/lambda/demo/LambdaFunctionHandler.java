@@ -33,7 +33,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         JSONObject responseJson = new JSONObject();
         String responseCode = "200";
         
-        String name = "personal";
+        String name = "";
         
         try {
         	JSONObject event = (JSONObject)parser.parse(reader);
@@ -42,6 +42,10 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
                 if ( qps.get("name") != null) {
                 	name = (String) qps.get("name");
                 }
+            }
+            
+            if (name.equals("")) {
+            	throw new Exception("Calendar name should not be empty!");
             }
 
             deleteCalendar(name, context);
@@ -65,7 +69,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         writer.close();
     }
     
-    public void deleteCalendar(String name, Context context) {
+    public void deleteCalendar(String name, Context context) throws Exception {
     	LambdaLogger logger = context.getLogger();
     	
     	try {
@@ -79,11 +83,15 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    //	Get calendar id
     	    String calendarIdQuery = String.format("SELECT id FROM cms_db.Calendars WHERE name='%s'", name);
     	    ResultSet resultSet = stmt.executeQuery(calendarIdQuery);
-    	    int calendarId = 0;
+    	    int calendarId = -1;
     	    if (resultSet.next()) {
     	    	calendarId = resultSet.getInt("id");
     	    }
     	    resultSet.close();
+    	    
+    	    if (calendarId == -1) {
+    	    	throw new Exception("Calendar name does not exist!");
+    	    }
     	    
     	    String deleteCalendar = String.format("DELETE FROM cms_db.Calendars WHERE id=%d", calendarId);
     	    stmt.executeUpdate(deleteCalendar);
@@ -92,8 +100,8 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    conn.close();
 
     	} catch (Exception e) {
-    	    e.printStackTrace();
     	    logger.log("Caught exception: " + e.getMessage());
+    	    throw e;
     	}
     }
 
