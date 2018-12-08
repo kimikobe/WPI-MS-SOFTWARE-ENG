@@ -3,12 +3,12 @@
 		"description": "This is the API for get a list of all calendars in our CMS",
 		"title": "get_all_calendars"
 	},
-	"schemes": ["http"],
+	"schemes": [
+		"http"
+	],
 	"path": {
 		"/loadCalendar": {
-			"GET": {
-				
-			}
+			"GET": {}
 		}
 	},
 	"response": {
@@ -17,12 +17,12 @@
 			"body": {
 				"calendars": [
 					{
-						"id": "int",	//	id of the calendar
-						"name": "String",	//	name of the calendar
+						"id": "int",
+						"name": "String"
 					},
 					{
-						"id": "int",	//	id of the calendar
-						"name": "String",	//	name of the calendar
+						"id": "int",
+						"name": "String"
 					}
 				]
 			}
@@ -38,15 +38,17 @@
 		"description": "This is the API for create a new calendar in our CMS",
 		"title": "create_calendar"
 	},
-	"schemes": ["http"],
+	"schemes": [
+		"http"
+	],
 	"path": {
 		"/createCalendar": {
 			"POST": {
 				"body": {
-					"name": "String",	//	name of the calendar
-					"duration": "int",	//	duration of each meetings in this calendar
-					"start_time": "int",	//	start time of the first meeting in a day
-					"end_time": "int",	//	end time of the last meeting in a day
+					"name": "String", //	name of the calendar
+					"duration": "int", //	duration of each meetings in this calendar
+					"start_time": "int", //	start time of the first meeting in a day
+					"end_time": "int", //	end time of the last meeting in a day
 					"start_date": "String",
 					"end_date": "String"
 				}
@@ -68,11 +70,13 @@
 		"description": "This is the API for delete a calendar in our CMS",
 		"title": "delete_calendar"
 	},
-	"schemes": ["http"],
+	"schemes": [
+		"http"
+	],
 	"path": {
 		"/deleteCalendar": {
 			"DELETE": {
-				"name": "String"	//	the ID of the calendar that need to be deleted
+				"name": "String" //	the ID of the calendar that need to be deleted
 			}
 		}
 	},
@@ -91,7 +95,9 @@
 		"description": "This is the API for load a calendar in our CMS",
 		"title": "load_calendar"
 	},
-	"schemes": ["http"],
+	"schemes": [
+		"http"
+	],
 	"path": {
 		"/loadCalendar": {
 			"GET": {
@@ -109,11 +115,11 @@
 			"body": {
 				"timeslots": [
 					{
-						"start time": "String",	//	start time of the meeting
-						"duration": "int",	//	duration of the meeting
-						"status": "int",	//	status of the timeslot, -1: closed, 0: open for schedule, 1: scheduled
-						"person": "String",	//	persons' name
-						"location": "String"	//	location of the meeting
+						"start time": "String", //	start time of the meeting
+						"duration": "int", //	duration of the meeting
+						"status": "int", //	status of the timeslot, -1: closed, 0: open for schedule, 1: scheduled
+						"person": "String", //	persons' name
+						"location": "String" //	location of the meeting
 					}
 				]
 			}
@@ -129,11 +135,13 @@
 		"description": "This is the API for add day to a calendar",
 		"title": "add_day_to_calendar"
 	},
-	"schemes": ["http"],
+	"schemes": [
+		"http"
+	],
 	"path": {
 		"/calendar/id": {
 			"POST": {
-				"date": "String"	//	the date to add to the calendar
+				"date": "String" //	the date to add to the calendar
 			}
 		}
 	},
@@ -152,11 +160,13 @@
 		"description": "This is the API for remove day from a calendar",
 		"title": "remove_day_from_calendar"
 	},
-	"schemes": ["http"],
+	"schemes": [
+		"http"
+	],
 	"path": {
 		"/calendar/id": {
 			"DELETE": {
-				"date": "String"	//	the date to remove from the calendar
+				"date": "String" //	the date to remove from the calendar
 			}
 		}
 	},
@@ -166,16 +176,15 @@
 		}
 	}
 }
-
-
-
 // closeTimeSlot
 {
 	"info": {
 		"description": "This is the API for close timeslots",
 		"title": "close_timeslot"
 	},
-	"schemes": ["http"],
+	"schemes": [
+		"http"
+	],
 	"path": {
 		"/closeTimeSlot": {
 			"PUT": {
@@ -185,7 +194,7 @@
 				"name": "String"
 				"date": "String",
 				"time": "int",
-				"day of week": "int"			//	1=Sunday, 2=Monday, 3=Tuesday, 4=Wednesday, 5=Thursday, 6=Friday, 7=Saturday
+				"day of week": "int" //	1=Sunday, 2=Monday, 3=Tuesday, 4=Wednesday, 5=Thursday, 6=Friday, 7=Saturday
 			}
 		}
 	},
@@ -204,12 +213,14 @@
 		"description": "This is the API for schedule a meeting",
 		"title": "schedule_meeting"
 	},
-	"schemes": ["http"],
+	"schemes": [
+		"http"
+	],
 	"path": {
 		"/scheduleMeeting": {
 			"PUT": {
-				"id": "int",	//	timeslot id
-				"status": "int",	//	for schedule, this should be 1
+				"id": "int", //	timeslot id
+				"status": "int", //	for schedule, this should be 1
 				"person": "String",
 				"location": "String"
 			}
@@ -221,11 +232,11 @@
 			"body": {
 				"timeslot": [
 					{
-						"start time": "String",	//	start time of the meeting
-						"duration": "int",	//	duration of the meeting
-						"status": "int",	//	status of the timeslot, -1: closed, 0: open for schedule, 1: scheduled
-						"person": "String",	//	persons' name
-						"location": "String"	//	location of the meeting
+						"start time": "String", //	start time of the meeting
+						"duration": "int", //	duration of the meeting
+						"status": "int", //	status of the timeslot, -1: closed, 0: open for schedule, 1: scheduled
+						"person": "String", //	persons' name
+						"location": "String" //	location of the meeting
 					}
 				]
 			}
@@ -241,12 +252,14 @@
 		"description": "This is the API for cancel a meeting",
 		"title": "cancel_meeting"
 	},
-	"schemes": ["http"],
+	"schemes": [
+		"http"
+	],
 	"path": {
 		"/scheduleMeeting": {
 			"PUT": {
-				"id": "int",	//	timeslot id
-				"status": "int",	//	for schedule, this should be 1
+				"id": "int", //	timeslot id
+				"status": "int", //	for schedule, this should be 1
 				"person": "String",
 				"location": "String"
 			}
@@ -267,12 +280,14 @@
 		"description": "This is the API for show daily view in our CMS",
 		"title": "show_daily_view"
 	},
-	"schemes": ["http"],
+	"schemes": [
+		"http"
+	],
 	"path": {
 		"/calendar/id": {
 			"GET": {
-				"month": "String",	// get the month from calendar
-				"day of week": "String"   //    get the day from calendar
+				"month": "String", // get the month from calendar
+				"day of week": "String" //    get the day from calendar
 			}
 		}
 	},
@@ -283,11 +298,11 @@
 				// return list of timeslots accordingly
 				"timeslots": [
 					{
-						"start time": "String",	//	start time of the meeting
-						"duration": "int",	//	duration of the meeting
-						"status": "int",	//	status of the timeslot, -1: closed, 0: open for schedule, 1: scheduled
-						"person": "String",	//	persons' name
-						"location": "String"	//	location of the meeting
+						"start time": "String", //	start time of the meeting
+						"duration": "int", //	duration of the meeting
+						"status": "int", //	status of the timeslot, -1: closed, 0: open for schedule, 1: scheduled
+						"person": "String", //	persons' name
+						"location": "String" //	location of the meeting
 					}
 				]
 			}
@@ -304,12 +319,14 @@
 		"description": "This is the API for show monthly view in our CMS",
 		"title": "show_monthly_view"
 	},
-	"schemes": ["http"],
+	"schemes": [
+		"http"
+	],
 	"path": {
 		"/calendar/id": {
 			"GET": {
-				"month": "String",  // get the month from calendar
-				"day of week": null    //  get the null value for day from calendar 
+				"month": "String", // get the month from calendar
+				"day of week": null //  get the null value for day from calendar 
 			}
 		}
 	},
@@ -320,18 +337,14 @@
 				// return list of timeslots accordingly
 				"timeslots": [
 					{
-						"start time": "String",	//	start time of the meeting
-						"duration": "int",	//	duration of the meeting
-						"status": "int",	//	status of the timeslot, -1: closed, 0: open for schedule, 1: scheduled
-						"person": "String",	//	persons' name
-						"location": "String"	//	location of the meeting
+						"start time": "String", //	start time of the meeting
+						"duration": "int", //	duration of the meeting
+						"status": "int", //	status of the timeslot, -1: closed, 0: open for schedule, 1: scheduled
+						"person": "String", //	persons' name
+						"location": "String" //	location of the meeting
 					}
 				]
 			}
 		}
 	}
 }
-
-
-
-
