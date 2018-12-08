@@ -124,6 +124,10 @@
 					}
 				]
 			}
+		},
+		"error": {
+			"statusCode": "400",
+			"exception":	"Error message"
 		}
 	}
 }
