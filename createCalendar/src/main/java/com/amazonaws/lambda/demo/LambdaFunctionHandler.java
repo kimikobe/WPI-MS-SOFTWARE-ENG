@@ -26,12 +26,12 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         String responseCode = "200";
         
         //	default value
-        String name = "default";
-        int duration = 20;
-        int start_time = 480;
-        int end_time = 17 * 60;
-        String start_date = "2018-09-24";
-        String end_date = "2018-10-04";
+        String name = "";
+        int duration = -1;
+        int start_time = -1;
+        int end_time = -1;
+        String start_date = "";
+        String end_date = "";
         
         try {
         	JSONObject event = (JSONObject)parser.parse(reader);
@@ -56,6 +56,10 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
                 if ( qps.get("end_date") != null) {
                 	end_date = (String)qps.get("end_date");
                 }
+            }
+            
+            if (name.equals("") || duration == -1 || start_time == -1 || end_time == -1 || start_date.equals("") || end_date.equals("")) {
+            	throw new Exception("Invalid input for create calendar");
             }
 
             createCalendar(name, duration, start_time, end_time, start_date, end_date, context);
