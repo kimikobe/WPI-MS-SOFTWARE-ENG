@@ -82,8 +82,15 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    Statement stmt = conn.createStatement();
     	    
     	    //	Create new meeting
-    	    String newMeeting = String.format("UPDATE cms_db.TimeSlots SET status = %d, person = '%s', location = '%s' WHERE id = %d",
-    	    		status, person, location, id);
+    	    String newMeeting = "";
+    	    if (status == 1) {
+	    	    newMeeting = String.format("UPDATE cms_db.TimeSlots SET status = %d, person = '%s', location = '%s' WHERE id = %d",
+	    	    		status, person, location, id);
+    	    }
+    	    else if (status == 0) {
+    	    	newMeeting = String.format("UPDATE cms_db.TimeSlots SET status = %d, person = '', location = '' WHERE id = %d",
+	    	    		status, id);
+    	    }
     	    stmt.executeUpdate(newMeeting);
     	    
     	    stmt.close();
