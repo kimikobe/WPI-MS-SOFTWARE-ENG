@@ -24,12 +24,12 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         String calendar_name = "";
         String date = "";
         int time = -1;
-        String dayofweek = "";
+        int dayofweek = -1;
         
         try {
         	JSONObject event = (JSONObject)parser.parse(reader);
-            if (event.get("body") != null) {
-                JSONObject qps = (JSONObject)parser.parse((String) event.get("body"));
+        	if (event.get("queryStringParameters") != null) {
+                JSONObject qps = (JSONObject)event.get("queryStringParameters");
                 logger.log(qps.toJSONString());
                 if ( qps.get("name") != null) {
                     calendar_name = (String)qps.get("name");
@@ -41,7 +41,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
                     time = Integer.parseInt((String)qps.get("time"));
                 }
                 if ( qps.get("dayofweek") != null) {
-                    dayofweek = (String)qps.get("dayofweek");
+                	dayofweek = Integer.parseInt((String)qps.get("dayofweek"));
                 }
                 
             }
@@ -103,7 +103,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	return calendarId;
 	}
 
-	public void closeTimeSlot(int calendarId, String date, int time, String dayofweek, Context context) {
+	public void closeTimeSlot(int calendarId, String date, int time, int dayofweek, Context context) {
     	LambdaLogger logger = context.getLogger();
     	
     	try {
@@ -116,24 +116,24 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    
     	    //	Close a selected timeslot
     	    String closeTimeSlot = "";
-    	    if (date != "" && time != -1 && dayofweek == "") {
+    	    if (date != "" && time != -1 && dayofweek == -1) {
     	    	closeTimeSlot = String.format("UPDATE cms_db.TimeSlots SET status = -1 "
-    	    			+ "WHERE calendarId = %d AND date = '%s' AND time = %d",
+    	    			+ "WHERE calendarId = %d AND date = '%s' AND time = %d AND status <> 1",
     	    			calendarId, date, time);
     	    }
-    	    else if (date == "" && time != -1 && dayofweek != "") {
+    	    else if (date == "" && time != -1 && dayofweek != -1) {
     	    	closeTimeSlot = String.format("UPDATE cms_db.TimeSlots SET status = -1 "
-    	    			+ "WHERE calendarId = %d AND time = %d AND DATENAME(dw, date) = '%s'",
+    	    			+ "WHERE calendarId = %d AND time = %d AND DAYOFWEEK(date) = %d AND status <> 1",
     	    			calendarId, time, dayofweek);
     	    }
-    	    else if (date != "" && time == -1 && dayofweek == "") {
+    	    else if (date != "" && time == -1 && dayofweek == -1) {
     	    	closeTimeSlot = String.format("UPDATE cms_db.TimeSlots SET status = -1 "
-    	    			+ "WHERE calendarId = %d AND date = '%s'",
+    	    			+ "WHERE calendarId = %d AND date = '%s' AND status <> 1",
     	    			calendarId, date);
     	    }
-    	    else if (date == "" && time != -1 && dayofweek != "") {
+    	    else if (date == "" && time != -1 && dayofweek == -1) {
     	    	closeTimeSlot = String.format("UPDATE cms_db.TimeSlots SET status = -1 "
-    	    			+ "WHERE calendarId = %d AND time = %d",
+    	    			+ "WHERE calendarId = %d AND time = %d AND status <> 1",
     	    			calendarId, time);
     	    }
     	    stmt.executeUpdate(closeTimeSlot);
