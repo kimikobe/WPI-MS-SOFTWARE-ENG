@@ -1,3 +1,4 @@
+// laod all calendar
 {
 	"info": {
 		"description": "This is the API for get a list of all calendars in our CMS",
@@ -32,7 +33,7 @@
 
 
 
-
+//	create calendar
 {
 	"info": {
 		"description": "This is the API for create a new calendar in our CMS",
@@ -64,7 +65,7 @@
 
 
 
-
+// delete calendar
 {
 	"info": {
 		"description": "This is the API for delete a calendar in our CMS",
@@ -89,7 +90,7 @@
 
 
 
-
+// load single calendar
 {
 	"info": {
 		"description": "This is the API for load a calendar in our CMS",
@@ -129,7 +130,7 @@
 
 
 
-
+// add day to calendar
 {
 	"info": {
 		"description": "This is the API for add day to a calendar",
@@ -139,9 +140,10 @@
 		"http"
 	],
 	"path": {
-		"/calendar/id": {
+		"/addDayToCalendar": {
 			"POST": {
-				"date": "String" //	the date to add to the calendar
+				"date": "String", //	the date to add to the calendar
+				"name": "String"
 			}
 		}
 	},
@@ -154,7 +156,7 @@
 
 
 
-
+// remove day from calendar
 {
 	"info": {
 		"description": "This is the API for remove day from a calendar",
@@ -164,9 +166,10 @@
 		"http"
 	],
 	"path": {
-		"/calendar/id": {
+		"/removedayfromcalendar": {
 			"DELETE": {
-				"date": "String" //	the date to remove from the calendar
+				"date": "String", //	the date to remove from the calendar
+				"name": "String"
 			}
 		}
 	},
@@ -176,7 +179,13 @@
 		}
 	}
 }
+
+
 // closeTimeSlot
+// if input is date and time, it will close an individual timeslot
+// if input is time and day of week, it will close all timeslots on a given Day of Week and time
+// if input is date, it will close all timeslots on the given Day
+// if input is time, it will close all timeslots at the given time
 {
 	"info": {
 		"description": "This is the API for close timeslots",
@@ -191,7 +200,7 @@
 				// Depending on what we received, we could close timeslot accordingly
 				// If only date string is not empty, time and day of week are empty,
 				// it means we need to close all timeslots on that day, etc.
-				"name": "String"
+				"name": "String",
 				"date": "String",
 				"time": "int",
 				"day of week": "int" //	1=Sunday, 2=Monday, 3=Tuesday, 4=Wednesday, 5=Thursday, 6=Friday, 7=Saturday
@@ -207,7 +216,7 @@
 
 
 
-
+// schedule meeting
 {
 	"info": {
 		"description": "This is the API for schedule a meeting",
@@ -228,25 +237,14 @@
 	},
 	"response": {
 		"default": {
-			"statusCode": "200",
-			"body": {
-				"timeslot": [
-					{
-						"start time": "String", //	start time of the meeting
-						"duration": "int", //	duration of the meeting
-						"status": "int", //	status of the timeslot, -1: closed, 0: open for schedule, 1: scheduled
-						"person": "String", //	persons' name
-						"location": "String" //	location of the meeting
-					}
-				]
-			}
+			"statusCode": "200"
 		}
 	}
 }
 
 
 
-
+// cancel meeting
 {
 	"info": {
 		"description": "This is the API for cancel a meeting",
@@ -259,92 +257,13 @@
 		"/scheduleMeeting": {
 			"PUT": {
 				"id": "int", //	timeslot id
-				"status": "int", //	for schedule, this should be 1
-				"person": "String",
-				"location": "String"
+				"status": "int", //	for cancel, this should be 0
 			}
 		}
 	},
 	"response": {
 		"default": {
 			"statusCode": "200"
-		}
-	}
-}
-
-
-
-
-{
-	"info": {
-		"description": "This is the API for show daily view in our CMS",
-		"title": "show_daily_view"
-	},
-	"schemes": [
-		"http"
-	],
-	"path": {
-		"/calendar/id": {
-			"GET": {
-				"month": "String", // get the month from calendar
-				"day of week": "String" //    get the day from calendar
-			}
-		}
-	},
-	"response": {
-		"default": {
-			"statusCode": "200",
-			"body": {
-				// return list of timeslots accordingly
-				"timeslots": [
-					{
-						"start time": "String", //	start time of the meeting
-						"duration": "int", //	duration of the meeting
-						"status": "int", //	status of the timeslot, -1: closed, 0: open for schedule, 1: scheduled
-						"person": "String", //	persons' name
-						"location": "String" //	location of the meeting
-					}
-				]
-			}
-		}
-	}
-}
-
-
-
-
-
-{
-	"info": {
-		"description": "This is the API for show monthly view in our CMS",
-		"title": "show_monthly_view"
-	},
-	"schemes": [
-		"http"
-	],
-	"path": {
-		"/calendar/id": {
-			"GET": {
-				"month": "String", // get the month from calendar
-				"day of week": null //  get the null value for day from calendar 
-			}
-		}
-	},
-	"response": {
-		"default": {
-			"statusCode": "200",
-			"body": {
-				// return list of timeslots accordingly
-				"timeslots": [
-					{
-						"start time": "String", //	start time of the meeting
-						"duration": "int", //	duration of the meeting
-						"status": "int", //	status of the timeslot, -1: closed, 0: open for schedule, 1: scheduled
-						"person": "String", //	persons' name
-						"location": "String" //	location of the meeting
-					}
-				]
-			}
 		}
 	}
 }
