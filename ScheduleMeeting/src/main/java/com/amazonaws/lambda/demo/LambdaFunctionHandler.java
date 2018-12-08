@@ -25,8 +25,8 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         String responseCode = "200";
         
         //	default value
-        int id = 0;
-        int status = 0;
+        int id = -1;
+        int status = -2;
         String person = "";
         String location = "";
         
@@ -47,7 +47,9 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
             	location = (String)event.get("location");
             }
                 
-            
+            if (id == -1 || status == -2) {
+            	throw new Exception("Invalid input!");
+            }
 
             scheduleMeeting(id, status, person, location, context);
             
@@ -70,7 +72,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         writer.close();
     }
     
-    public void scheduleMeeting(int id, int status, String person, String location, Context context) {
+    public void scheduleMeeting(int id, int status, String person, String location, Context context) throws Exception {
     	LambdaLogger logger = context.getLogger();
     	
     	try {
@@ -97,8 +99,8 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    conn.close();
 
     	} catch (Exception e) {
-    	    e.printStackTrace();
     	    logger.log("Caught exception: " + e.getMessage());
+    	    throw e;
     	}
     }
 
