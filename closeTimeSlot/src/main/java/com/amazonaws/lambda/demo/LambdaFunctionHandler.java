@@ -21,36 +21,47 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         String responseCode = "200";
         
         //	default value
+        String calendar_name = "";
         String date = "";
-        String time = "";
-        String dayofweek = "";
+        int time = -1;
+        int dayofweek = -1;
         
         try {
         	JSONObject event = (JSONObject)parser.parse(reader);
-            if (event.get("body") != null) {
-                JSONObject qps = (JSONObject)parser.parse((String) event.get("body"));
+        	if (event.get("queryStringParameters") != null) {
+                JSONObject qps = (JSONObject)event.get("queryStringParameters");
                 logger.log(qps.toJSONString());
+                if ( qps.get("name") != null) {
+                    calendar_name = (String)qps.get("name");
+                }
                 if ( qps.get("date") != null) {
                     date = (String)qps.get("date");
                 }
                 if ( qps.get("time") != null) {
-                    time = (String)qps.get("time");
+                    time = Integer.parseInt((String)qps.get("time"));
                 }
                 if ( qps.get("dayofweek") != null) {
-                    dayofweek = (String)qps.get("dayofweek");
+                	dayofweek = Integer.parseInt((String)qps.get("dayofweek"));
                 }
                 
             }
+            int calendarId = validateCalendar(calendar_name, context);
+            if (calendarId == -1) {
+            	responseJson.put("isBase64Encoded", false);
+                responseJson.put("statusCode", 400);
+                responseJson.put("error", "Calendar does not exist!");
+            }
+            else {
+            	closeTimeSlot(calendarId, date, time, dayofweek, context);
+                
+                JSONObject responseBody = new JSONObject();
+                responseBody.put("input", event.toJSONString());
+                responseBody.put("body", "Sucess");
 
-            closeTimeSlot(date, time, dayofweek, context);
-            
-            JSONObject responseBody = new JSONObject();
-            responseBody.put("input", event.toJSONString());
-            responseBody.put("body", "Sucess");
-
-            responseJson.put("isBase64Encoded", false);
-            responseJson.put("statusCode", responseCode);
-            responseJson.put("body", responseBody.toString());  
+                responseJson.put("isBase64Encoded", false);
+                responseJson.put("statusCode", responseCode);
+                responseJson.put("body", responseBody.toString());
+            }  
 
         } catch(Exception pex) {
             responseJson.put("statusCode", "400");
@@ -63,7 +74,36 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         writer.close();
     }
     
-    public void closeTimeSlot(String date, String time, String dayofweek, Context context) {
+    private int validateCalendar(String calendar_name, Context context) {
+    	LambdaLogger logger = context.getLogger();
+    	int calendarId = -1;
+    	
+    	try {
+    		String url = "jdbc:mysql://cmsdb.clnm8zsvchg3.us-east-2.rds.amazonaws.com:3306";
+    	    String username = "cmsAdmin";
+    	    String password = "cms:pass";
+
+    	    Connection conn = DriverManager.getConnection(url, username, password);
+    	    Statement stmt = conn.createStatement();
+
+    	    // Get calendar id
+    	    String calendarIdQuery = String.format("SELECT id FROM cms_db.Calendars WHERE name='%s'", calendar_name);
+    	    ResultSet resultSet = stmt.executeQuery(calendarIdQuery);
+    	    if (resultSet.next()) {
+    	    	calendarId = resultSet.getInt("id");
+    	    }
+    	    resultSet.close();
+    	    
+    	    stmt.close();
+    	    conn.close();
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	    logger.log("Caught exception: " + e.getMessage());
+    	}
+    	return calendarId;
+	}
+
+	public void closeTimeSlot(int calendarId, String date, int time, int dayofweek, Context context) {
     	LambdaLogger logger = context.getLogger();
     	
     	try {
@@ -75,9 +115,28 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    Statement stmt = conn.createStatement();
     	    
     	    //	Close a selected timeslot
-    	    String closedTimeSlot = String.format("UPDATE cms_db.TimeSlots SET date = '%s', time = '%s', dayofweek = '%s'",
-    	    		date, time, dayofweek);
-    	    stmt.executeUpdate(closedTimeSlot);
+    	    String closeTimeSlot = "";
+    	    if (date != "" && time != -1 && dayofweek == -1) {
+    	    	closeTimeSlot = String.format("UPDATE cms_db.TimeSlots SET status = -1 "
+    	    			+ "WHERE calendarId = %d AND date = '%s' AND time = %d AND status <> 1",
+    	    			calendarId, date, time);
+    	    }
+    	    else if (date == "" && time != -1 && dayofweek != -1) {
+    	    	closeTimeSlot = String.format("UPDATE cms_db.TimeSlots SET status = -1 "
+    	    			+ "WHERE calendarId = %d AND time = %d AND DAYOFWEEK(date) = %d AND status <> 1",
+    	    			calendarId, time, dayofweek);
+    	    }
+    	    else if (date != "" && time == -1 && dayofweek == -1) {
+    	    	closeTimeSlot = String.format("UPDATE cms_db.TimeSlots SET status = -1 "
+    	    			+ "WHERE calendarId = %d AND date = '%s' AND status <> 1",
+    	    			calendarId, date);
+    	    }
+    	    else if (date == "" && time != -1 && dayofweek == -1) {
+    	    	closeTimeSlot = String.format("UPDATE cms_db.TimeSlots SET status = -1 "
+    	    			+ "WHERE calendarId = %d AND time = %d AND status <> 1",
+    	    			calendarId, time);
+    	    }
+    	    stmt.executeUpdate(closeTimeSlot);
     	    
     	    stmt.close();
     	    conn.close();
