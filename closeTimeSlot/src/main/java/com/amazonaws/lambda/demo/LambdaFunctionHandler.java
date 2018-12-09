@@ -43,8 +43,12 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
                 if ( qps.get("dayofweek") != null) {
                 	dayofweek = Integer.parseInt((String)qps.get("dayofweek"));
                 }
-                
             }
+        	
+        	if (calendar_name.equals("") || date.equals("") || time == -1 || dayofweek == -1) {
+        		throw new Exception("Invalid Input");
+        	}
+        	
             int calendarId = validateCalendar(calendar_name, context);
             if (calendarId == -1) {
             	responseJson.put("isBase64Encoded", false);
@@ -74,7 +78,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         writer.close();
     }
     
-    private int validateCalendar(String calendar_name, Context context) {
+    private int validateCalendar(String calendar_name, Context context) throws Exception {
     	LambdaLogger logger = context.getLogger();
     	int calendarId = -1;
     	
@@ -97,13 +101,13 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    stmt.close();
     	    conn.close();
     	} catch (Exception e) {
-    	    e.printStackTrace();
     	    logger.log("Caught exception: " + e.getMessage());
+    	    throw e;
     	}
     	return calendarId;
 	}
 
-	public void closeTimeSlot(int calendarId, String date, int time, int dayofweek, Context context) {
+	public void closeTimeSlot(int calendarId, String date, int time, int dayofweek, Context context) throws Exception {
     	LambdaLogger logger = context.getLogger();
     	
     	try {
@@ -142,8 +146,8 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    conn.close();
 
     	} catch (Exception e) {
-    	    e.printStackTrace();
     	    logger.log("Caught exception: " + e.getMessage());
+    	    throw e;
     	}
     }
 
