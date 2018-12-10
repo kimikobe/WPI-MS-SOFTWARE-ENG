@@ -53,13 +53,8 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 
             scheduleMeeting(id, status, person, location, context);
             
-            JSONObject responseBody = new JSONObject();
-            responseBody.put("input", event.toJSONString());
-            responseBody.put("body", "Sucess");
-
             responseJson.put("isBase64Encoded", false);
-            responseJson.put("statusCode", responseCode);
-            responseJson.put("body", responseBody.toString());  
+            responseJson.put("statusCode", responseCode);  
 
         } catch(Exception pex) {
             responseJson.put("statusCode", "400");

@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
 import org.junit.Assert;
@@ -46,22 +47,17 @@ public class LambdaFunctionHandlerTest {
     public void testLambdaFunctionHandler() throws IOException {
         LambdaFunctionHandler handler = new LambdaFunctionHandler();
         Context ctx = createContext();
-       
-        JSONObject output = new JSONObject();
+                
         outputStream = new ByteArrayOutputStream();
         handler.handleRequest(inputStream, outputStream, ctx);
 
         // TODO: validate output here if needed.
         JSONObject responseJson = new JSONObject();
         String responseCode = "200";
-        
-        JSONObject responseBody = new JSONObject();
-        responseBody.put("input", inputStream.toString());
-        responseBody.put("body", "Sucess");
 
         responseJson.put("isBase64Encoded", false);
         responseJson.put("statusCode", responseCode);
-        responseJson.put("body", responseBody.toString());
-        Assert.assertEquals(responseJson.toString(), output);
+
+        Assert.assertEquals(responseJson.toString(), outputStream.toString());
     }
 }

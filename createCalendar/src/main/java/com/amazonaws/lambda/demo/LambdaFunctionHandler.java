@@ -35,27 +35,24 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         
         try {
         	JSONObject event = (JSONObject)parser.parse(reader);
-            if (event.get("body") != null) {
-                JSONObject qps = (JSONObject)parser.parse((String) event.get("body"));
-                logger.log(qps.toJSONString());
-                if ( qps.get("name") != null) {
-                    name = (String)qps.get("name");
-                }
-                if ( qps.get("duration") != null) {
-                	duration = Integer.parseInt((String) qps.get("duration"));
-                }
-                if ( qps.get("start_time") != null) {
-                	start_time = Integer.parseInt((String)qps.get("start_time"));
-                }
-                if ( qps.get("end_time") != null) {
-                	end_time = Integer.parseInt((String)qps.get("end_time"));
-                }
-                if ( qps.get("start_date") != null) {
-                	start_date = (String)qps.get("start_date");
-                }
-                if ( qps.get("end_date") != null) {
-                	end_date = (String)qps.get("end_date");
-                }
+        	logger.log(event.toString());
+        	if ( event.get("name") != null) {
+                name = (String)event.get("name");
+            }
+            if ( event.get("duration") != null) {
+            	duration = Integer.parseInt((String) event.get("duration"));
+            }
+            if ( event.get("start_time") != null) {
+            	start_time = Integer.parseInt((String)event.get("start_time"));
+            }
+            if ( event.get("end_time") != null) {
+            	end_time = Integer.parseInt((String)event.get("end_time"));
+            }
+            if ( event.get("start_date") != null) {
+            	start_date = (String)event.get("start_date");
+            }
+            if ( event.get("end_date") != null) {
+            	end_date = (String)event.get("end_date");
             }
             
             if (name.equals("") || duration == -1 || start_time == -1 || end_time == -1 || start_date.equals("") || end_date.equals("")) {
@@ -63,14 +60,9 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
             }
 
             createCalendar(name, duration, start_time, end_time, start_date, end_date, context);
-            
-            JSONObject responseBody = new JSONObject();
-            responseBody.put("input", event.toJSONString());
-            responseBody.put("body", "Sucess");
 
             responseJson.put("isBase64Encoded", false);
-            responseJson.put("statusCode", responseCode);
-            responseJson.put("body", responseBody.toString());  
+            responseJson.put("statusCode", responseCode); 
 
         } catch(Exception pex) {
             responseJson.put("statusCode", "400");

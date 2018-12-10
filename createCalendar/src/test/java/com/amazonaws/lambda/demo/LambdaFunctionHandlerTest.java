@@ -1,9 +1,15 @@
 package com.amazonaws.lambda.demo;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -22,6 +28,15 @@ public class LambdaFunctionHandlerTest {
     public static void createInput() throws IOException {
         // TODO: set up your sample input object here.
     	inputStream = null;
+    	JSONObject body = new JSONObject();
+    	body.put("name", "calendar1");
+    	body.put("duration", "30");
+    	body.put("start_time", "180");
+    	body.put("end_time", "200");
+    	body.put("start_date", "2018-10-08");
+    	body.put("end_date", "2018-10-28");
+
+    	inputStream = new ByteArrayInputStream(body.toString().getBytes());
     }
 
     private Context createContext() {
@@ -37,9 +52,18 @@ public class LambdaFunctionHandlerTest {
     public void testLambdaFunctionHandler() throws IOException {
         LambdaFunctionHandler handler = new LambdaFunctionHandler();
         Context ctx = createContext();
+        
+        outputStream = new ByteArrayOutputStream();
         handler.handleRequest(inputStream, outputStream, ctx);
+        
+        JSONObject responseJson = new JSONObject();
+        String responseCode = "200";
 
+        responseJson.put("isBase64Encoded", false);
+        responseJson.put("statusCode", responseCode);
+        
         // TODO: validate output here if needed.
-        Assert.assertEquals("Hello from Lambda!", outputStream);
+        Assert.assertEquals(responseJson.toString(), outputStream.toString());
     }
+
 }

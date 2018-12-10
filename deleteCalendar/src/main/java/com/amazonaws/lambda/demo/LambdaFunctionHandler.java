@@ -49,12 +49,9 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
             deleteCalendar(name, context);
             
             JSONObject responseBody = new JSONObject();
-            responseBody.put("input", event.toJSONString());
-            responseBody.put("body", "Sucess");
 
             responseJson.put("isBase64Encoded", false);
             responseJson.put("statusCode", responseCode);
-            responseJson.put("body", responseBody.toString());  
 
         } catch(Exception pex) {
             responseJson.put("statusCode", "400");
