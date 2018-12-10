@@ -57,35 +57,28 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         try {
 
         	JSONObject event = (JSONObject)parser.parse(reader);
-        	
-        	if (event.get("queryStringParameters") != null) {
-                JSONObject qps = (JSONObject)event.get("queryStringParameters");
-                if (qps.get("name") != null) {
-                	name = (String) qps.get("name");
-                }
-                if (qps.get("start_date") != null) {
-                	start_date = (String) qps.get("start_date");
-                }
-                if (qps.get("end_date") != null) {
-                	end_date = (String) qps.get("end_date");
-                }
+
+            if (event.get("name") != null) {
+            	name = (String) event.get("name");
             }
-        	
-            JSONObject responseBody = new JSONObject();
-            responseBody.put("input", event.toJSONString());
-            
-            if (name == "") {
-	            JSONObject calendarList = getCalendarList(context);
-	            responseBody.put("body", calendarList);
+            if (event.get("start_date") != null) {
+            	start_date = (String) event.get("start_date");
+            }
+            if (event.get("end_date") != null) {
+            	end_date = (String) event.get("end_date");
+            }
+
+            if (name.equals("")) {
+	            JSONArray calendarList = getCalendarList(context);
+	            responseJson.put("calendarList", calendarList);
             }
             else {
-            	JSONObject timeslots = getTimeSlots(name, start_date, end_date, context);
-            	responseBody.put("body", timeslots);
+            	JSONArray timeslots = getTimeSlots(name, start_date, end_date, context);
+            	responseJson.put("timeslots", timeslots);
             }
 
             responseJson.put("isBase64Encoded", false);
-            responseJson.put("statusCode", responseCode);
-            responseJson.put("body", responseBody.toString());  
+            responseJson.put("statusCode", responseCode); 
 
 
         } catch(Exception pex) {
@@ -99,11 +92,9 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         writer.close();
     }
 
-    
-
-    private JSONObject getTimeSlots(String name, String start_date, String end_date, Context context) throws Exception {
+    private JSONArray getTimeSlots(String name, String start_date, String end_date, Context context) throws Exception {
     	LambdaLogger logger = context.getLogger();
-    	JSONObject rs = new JSONObject();
+    	JSONArray timeslotList = new JSONArray();
     	
     	try {
     		String url = "jdbc:mysql://cmsdb.clnm8zsvchg3.us-east-2.rds.amazonaws.com:3306";
@@ -134,7 +125,6 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    	timeslotQuery += String.format(" AND (date <= '%s')", end_date);
     	    }
     	    resultSet = stmt.executeQuery(timeslotQuery);
-    	    JSONArray timeslotList = new JSONArray();
     	    while (resultSet.next()) {
     	    	JSONObject timeslot = new JSONObject();
     	    	String rs_date = resultSet.getString("date");
@@ -152,7 +142,6 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    	timeslotList.add(timeslot);
     	    }
     	    resultSet.close();
-    	    rs.put("timeslots", timeslotList);
 
     	    stmt.close();
     	    conn.close();
@@ -162,14 +151,12 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    throw e;
     	}
     	
-		return rs;
+		return timeslotList;
 	}
 
-
-
-	public JSONObject getCalendarList(Context context) throws Exception {
+	public JSONArray getCalendarList(Context context) throws Exception {
     	LambdaLogger logger = context.getLogger();
-    	JSONObject rs = new JSONObject();
+    	JSONArray calendarList = new JSONArray();
 
     	try {
     		String url = "jdbc:mysql://cmsdb.clnm8zsvchg3.us-east-2.rds.amazonaws.com:3306";
@@ -180,19 +167,19 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    Statement stmt = conn.createStatement();
 
     	    //	Get all calendars name
-    	    String calendarIdQuery = "SELECT id, name FROM cms_db.Calendars";
+    	    String calendarIdQuery = "SELECT id, name, duration, start_time, end_time FROM cms_db.Calendars";
     	    ResultSet resultSet = stmt.executeQuery(calendarIdQuery);
 
-    	    JSONArray calendarList = new JSONArray();
     	    while (resultSet.next()) {
     	    	JSONObject calendar = new JSONObject();
     	    	calendar.put("id", resultSet.getInt("id"));
     	    	calendar.put("name", resultSet.getString("name"));
+    	    	calendar.put("duration", resultSet.getInt("duration"));
+    	    	calendar.put("start_time", resultSet.getInt("start_time"));
+    	    	calendar.put("end_time", resultSet.getInt("end_time"));
     	    	calendarList.add(calendar);
     	    }
     	    
-    	    rs.put("calendars", calendarList);
-
     	    resultSet.close();
 
     	    stmt.close();
@@ -203,7 +190,6 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    throw e;
     	}
 
-    	return rs;
+    	return calendarList;
     }
 }
-

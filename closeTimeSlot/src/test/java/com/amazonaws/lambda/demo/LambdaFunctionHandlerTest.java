@@ -56,7 +56,7 @@ public class LambdaFunctionHandlerTest {
 
         responseJson.put("isBase64Encoded", false);
         responseJson.put("statusCode", responseCode);
-        System.out.println(responseJson);
+
         // TODO: validate output here if needed.
         Assert.assertEquals(responseJson.toString(), outputStream.toString());
     }
