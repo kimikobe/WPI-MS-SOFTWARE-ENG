@@ -26,8 +26,10 @@ public class LambdaFunctionHandlerTest {
         // TODO: set up your sample input object here.
     	inputStream = null;
     	JSONObject input = new JSONObject();
-    	input.put("date", "2018-10-29");
     	input.put("name", "calendar1");
+    	input.put("date", "2018-10-26");
+    	input.put("time", "");
+    	input.put("dayofweek", "");
     	
     	inputStream = new ByteArrayInputStream(input.toString().getBytes());
     }
@@ -54,7 +56,7 @@ public class LambdaFunctionHandlerTest {
 
         responseJson.put("isBase64Encoded", false);
         responseJson.put("statusCode", responseCode);
-        
+        System.out.println(responseJson);
         // TODO: validate output here if needed.
         Assert.assertEquals(responseJson.toString(), outputStream.toString());
     }

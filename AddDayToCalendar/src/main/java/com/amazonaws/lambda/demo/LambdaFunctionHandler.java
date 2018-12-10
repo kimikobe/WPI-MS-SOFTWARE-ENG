@@ -60,12 +60,12 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 	        
 	        AddDayToCalendar(date, id, start_time, end_time, duration, context);
             
-            JSONObject responseBody = new JSONObject();
-            responseBody.put("input", event.toJSONString());
+            //JSONObject responseBody = new JSONObject();
+            //responseBody.put("input", event.toJSONString());
             
             responseJson.put("isBase64Encoded", false);
             responseJson.put("statusCode", responseCode);
-            responseJson.put("body", responseBody.toString());  
+            //responseJson.put("body", responseBody.toString());  
 
         } catch(Exception pex) {
             responseJson.put("statusCode", "400");

@@ -28,8 +28,8 @@ public class LambdaFunctionHandlerTest {
     	JSONObject input = new JSONObject();
     	input.put("date", "2018-10-29");
     	input.put("name", "calendar1");
-    	
     	inputStream = new ByteArrayInputStream(input.toString().getBytes());
+    	
     }
 
     private Context createContext() {
@@ -43,7 +43,7 @@ public class LambdaFunctionHandlerTest {
 
     @Test
     public void testLambdaFunctionHandler() throws IOException {
-    	LambdaFunctionHandler handler = new LambdaFunctionHandler();
+        LambdaFunctionHandler handler = new LambdaFunctionHandler();
         Context ctx = createContext();
         
         outputStream = new ByteArrayOutputStream();
@@ -59,3 +59,4 @@ public class LambdaFunctionHandlerTest {
         Assert.assertEquals(responseJson.toString(), outputStream.toString());
     }
 }
+

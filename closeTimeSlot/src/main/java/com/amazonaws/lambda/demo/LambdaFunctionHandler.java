@@ -28,24 +28,21 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         
         try {
         	JSONObject event = (JSONObject)parser.parse(reader);
-        	if (event.get("queryStringParameters") != null) {
-                JSONObject qps = (JSONObject)event.get("queryStringParameters");
-                logger.log(qps.toJSONString());
-                if ( qps.get("name") != null) {
-                    calendar_name = (String)qps.get("name");
-                }
-                if ( qps.get("date") != null) {
-                    date = (String)qps.get("date");
-                }
-                if ( qps.get("time") != null) {
-                    time = Integer.parseInt((String)qps.get("time"));
-                }
-                if ( qps.get("dayofweek") != null) {
-                	dayofweek = Integer.parseInt((String)qps.get("dayofweek"));
-                }
+
+            if ( event.get("name") != null) {
+                calendar_name = (String)event.get("name");
             }
+            if ( event.get("date") != null) {
+                date = (String)event.get("date");
+            }
+            if ( event.get("time") != null && !event.get("time").equals("")) {
+                time = Integer.parseInt((String)event.get("time"));
+            }
+            if ( event.get("dayofweek") != null && !event.get("dayofweek").equals("")) {
+            	dayofweek = Integer.parseInt((String)event.get("dayofweek"));
+            }            
         	
-        	if (calendar_name.equals("") || date.equals("") || time == -1 || dayofweek == -1) {
+        	if (calendar_name.equals("")) {
         		throw new Exception("Invalid Input");
         	}
         	
@@ -58,13 +55,9 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
             else {
             	closeTimeSlot(calendarId, date, time, dayofweek, context);
                 
-                JSONObject responseBody = new JSONObject();
-                responseBody.put("input", event.toJSONString());
-                responseBody.put("body", "Sucess");
-
                 responseJson.put("isBase64Encoded", false);
                 responseJson.put("statusCode", responseCode);
-                responseJson.put("body", responseBody.toString());
+
             }  
 
         } catch(Exception pex) {
@@ -120,22 +113,22 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    
     	    //	Close a selected timeslot
     	    String closeTimeSlot = "";
-    	    if (date != "" && time != -1 && dayofweek == -1) {
+    	    if (!date.equals("") && time != -1 && dayofweek == -1) {
     	    	closeTimeSlot = String.format("UPDATE cms_db.TimeSlots SET status = -1 "
     	    			+ "WHERE calendarId = %d AND date = '%s' AND time = %d AND status <> 1",
     	    			calendarId, date, time);
     	    }
-    	    else if (date == "" && time != -1 && dayofweek != -1) {
+    	    else if (date.equals("") && time != -1 && dayofweek != -1) {
     	    	closeTimeSlot = String.format("UPDATE cms_db.TimeSlots SET status = -1 "
     	    			+ "WHERE calendarId = %d AND time = %d AND DAYOFWEEK(date) = %d AND status <> 1",
     	    			calendarId, time, dayofweek);
     	    }
-    	    else if (date != "" && time == -1 && dayofweek == -1) {
+    	    else if (!date.equals("") && time == -1 && dayofweek == -1) {
     	    	closeTimeSlot = String.format("UPDATE cms_db.TimeSlots SET status = -1 "
     	    			+ "WHERE calendarId = %d AND date = '%s' AND status <> 1",
     	    			calendarId, date);
     	    }
-    	    else if (date == "" && time != -1 && dayofweek == -1) {
+    	    else if (date.equals("") && time != -1 && dayofweek == -1) {
     	    	closeTimeSlot = String.format("UPDATE cms_db.TimeSlots SET status = -1 "
     	    			+ "WHERE calendarId = %d AND time = %d AND status <> 1",
     	    			calendarId, time);
