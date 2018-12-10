@@ -37,11 +37,9 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         
         try {
         	JSONObject event = (JSONObject)parser.parse(reader);
-            if (event.get("queryStringParameters") != null) {
-                JSONObject qps = (JSONObject)event.get("queryStringParameters");
-                if ( qps.get("name") != null) {
-                	name = (String) qps.get("name");
-                }
+        	logger.log(event.toJSONString());
+            if ( event.get("name") != null) {
+            	name = (String) event.get("name");
             }
             
             if (name.equals("")) {
@@ -65,7 +63,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 
         logger.log(responseJson.toJSONString());
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
-        writer.write(responseJson.toJSONString());  
+        writer.write(responseJson.toJSONString());
         writer.close();
     }
     
