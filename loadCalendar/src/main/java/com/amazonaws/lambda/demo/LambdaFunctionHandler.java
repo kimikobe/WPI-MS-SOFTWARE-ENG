@@ -57,14 +57,15 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         try {
 
         	JSONObject event = (JSONObject)parser.parse(reader);
+        	logger.log(event.toString());
 
-            if (event.get("name") != null) {
+            if (event.get("name") != null && !event.get("name").equals("")) {
             	name = (String) event.get("name");
             }
-            if (event.get("start_date") != null) {
+            if (event.get("start_date") != null && !event.get("start_date").equals("")) {
             	start_date = (String) event.get("start_date");
             }
-            if (event.get("end_date") != null) {
+            if (event.get("end_date") != null && !event.get("end_date").equals("")) {
             	end_date = (String) event.get("end_date");
             }
 
@@ -116,7 +117,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    if (calendarId == -1) throw new Exception("Calendar does not exist!");
     	    
     	    //	Get all timeslots in the date range
-    	    String timeslotQuery = String.format("SELECT date, start_time, duration, status, person, location FROM cms_db.TimeSlots WHERE "
+    	    String timeslotQuery = String.format("SELECT id, date, start_time, duration, status, person, location FROM cms_db.TimeSlots WHERE "
     	    		+ "(calendarId = %d)", calendarId);
     	    if (start_date != "") {
     	    	timeslotQuery += String.format(" AND (date >= '%s')", start_date);
@@ -133,6 +134,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
     	    	int rs_status = resultSet.getInt("status");
     	    	String rs_person = resultSet.getString("person");
     	    	String rs_location = resultSet.getString("location");
+    	    	timeslot.put("id", resultSet.getInt("id"));
     	    	timeslot.put("date", rs_date);
     	    	timeslot.put("start_time", rs_start_time);
     	    	timeslot.put("duration", rs_duration);

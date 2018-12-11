@@ -1,15 +1,14 @@
 package com.amazonaws.lambda.demo;
 
-import java.io.BufferedReader;
+import static org.junit.Assert.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,6 +28,7 @@ public class LambdaFunctionHandlerTest {
         // TODO: set up your sample input object here.
     	inputStream = null;
     	JSONObject body = new JSONObject();
+    	
     	body.put("name", "calendar1");
     	body.put("duration", "30");
     	body.put("start_time", "180");
@@ -49,10 +49,11 @@ public class LambdaFunctionHandlerTest {
     }
 
     @Test
-    public void testLambdaFunctionHandler() throws IOException {
+    public void testLambdaFunctionHandler() throws Exception {
         LambdaFunctionHandler handler = new LambdaFunctionHandler();
         Context ctx = createContext();
         
+        System.out.println("Inside testLambdaFunctionHandler()");
         outputStream = new ByteArrayOutputStream();
         handler.handleRequest(inputStream, outputStream, ctx);
         
@@ -61,9 +62,9 @@ public class LambdaFunctionHandlerTest {
 
         responseJson.put("isBase64Encoded", false);
         responseJson.put("statusCode", responseCode);
-        
+             
         // TODO: validate output here if needed.
         Assert.assertEquals(responseJson.toString(), outputStream.toString());
     }
-
+    
 }

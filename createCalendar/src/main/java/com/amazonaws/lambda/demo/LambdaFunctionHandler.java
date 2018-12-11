@@ -68,8 +68,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
             responseJson.put("statusCode", "400");
             responseJson.put("exception", pex);
         }
-
-        logger.log(responseJson.toJSONString());
+ 
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
         writer.write(responseJson.toJSONString());  
         writer.close();

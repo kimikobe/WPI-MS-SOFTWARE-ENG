@@ -30,7 +30,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
                 
         try {
         	JSONObject event = (JSONObject)parser.parse(reader); 
-	       
+	        logger.log(event.toString());
         	if (event.get("date") != null) {
         		date = (String) event.get("date");
             }
@@ -60,18 +60,15 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 	        
 	        AddDayToCalendar(date, id, start_time, end_time, duration, context);
             
-            //JSONObject responseBody = new JSONObject();
-            //responseBody.put("input", event.toJSONString());
-            
             responseJson.put("isBase64Encoded", false);
             responseJson.put("statusCode", responseCode);
-            //responseJson.put("body", responseBody.toString());  
 
         } catch(Exception pex) {
             responseJson.put("statusCode", "400");
             responseJson.put("exception", pex);
         }
 
+        logger.log(responseJson.toString());
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
         writer.write(responseJson.toJSONString());  
         writer.close();

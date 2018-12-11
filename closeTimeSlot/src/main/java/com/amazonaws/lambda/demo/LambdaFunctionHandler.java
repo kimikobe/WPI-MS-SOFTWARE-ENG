@@ -28,7 +28,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         
         try {
         	JSONObject event = (JSONObject)parser.parse(reader);
-
+        	logger.log(event.toString());
             if ( event.get("name") != null) {
                 calendar_name = (String)event.get("name");
             }
