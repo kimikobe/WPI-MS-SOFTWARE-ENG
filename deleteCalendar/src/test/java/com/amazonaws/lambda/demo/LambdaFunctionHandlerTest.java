@@ -26,7 +26,7 @@ public class LambdaFunctionHandlerTest {
         // TODO: set up your sample input object here.
     	inputStream = null;
     	JSONObject input = new JSONObject();
-    	input.put("name", "calendar1");
+    	input.put("name", "calendar");
     	
     	inputStream = new ByteArrayInputStream(input.toString().getBytes());
     }

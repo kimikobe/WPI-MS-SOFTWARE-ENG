@@ -50,7 +50,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         	int duration = (int) temp.get("duration");
         	
 			if (checkDateInTimeslot(id, date, context)){
-        		throw new Exception("Date already exist in calendar!");
+        		throw new Exception("Date not exist in calendar!");
         	}
 	        
 	        RemoveDayFromCalendar(date, id, context);

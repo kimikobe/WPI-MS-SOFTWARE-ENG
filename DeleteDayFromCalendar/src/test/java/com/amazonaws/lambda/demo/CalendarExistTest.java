@@ -1,7 +1,5 @@
 package com.amazonaws.lambda.demo;
 
-import static org.junit.Assert.fail;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,28 +13,19 @@ import org.junit.Test;
 
 import com.amazonaws.services.lambda.runtime.Context;
 
-/**
- * A simple test harness for locally invoking your Lambda function handler.
- */
-public class LambdaFunctionHandlerTest {
-
-    private static InputStream inputStream;
+public class CalendarExistTest {
+	private static InputStream inputStream;
     private static OutputStream outputStream;
 
     @BeforeClass
     public static void createInput() throws IOException {
         // TODO: set up your sample input object here.
     	inputStream = null;
-    	JSONObject body = new JSONObject();
+    	JSONObject input = new JSONObject();
+    	input.put("date", "2018-10-31");
+    	input.put("name", "calendar1");
+    	inputStream = new ByteArrayInputStream(input.toString().getBytes());
     	
-    	body.put("name", "calendar");
-    	body.put("duration", "30");
-    	body.put("start_time", "180");
-    	body.put("end_time", "200");
-    	body.put("start_date", "2018-10-08");
-    	body.put("end_date", "2018-10-28");
-
-    	inputStream = new ByteArrayInputStream(body.toString().getBytes());
     }
 
     private Context createContext() {
@@ -49,22 +38,17 @@ public class LambdaFunctionHandlerTest {
     }
 
     @Test
-    public void testLambdaFunctionHandler() throws Exception {
+    public void testLambdaFunctionHandler() throws IOException {
         LambdaFunctionHandler handler = new LambdaFunctionHandler();
         Context ctx = createContext();
         
-        System.out.println("Inside testLambdaFunctionHandler()");
         outputStream = new ByteArrayOutputStream();
         handler.handleRequest(inputStream, outputStream, ctx);
         
         JSONObject responseJson = new JSONObject();
-        String responseCode = "200";
+        String responseCode = "400";
 
         responseJson.put("isBase64Encoded", false);
         responseJson.put("statusCode", responseCode);
-             
-        // TODO: validate output here if needed.
-        Assert.assertEquals(responseJson.toString(), outputStream.toString());
     }
-    
 }
