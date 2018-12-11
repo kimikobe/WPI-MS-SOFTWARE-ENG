@@ -13,11 +13,7 @@ import org.junit.Test;
 
 import com.amazonaws.services.lambda.runtime.Context;
 
-/**
- * A simple test harness for locally invoking your Lambda function handler.
- */
-public class LambdaFunctionHandlerTest {
-
+public class DateExistInCalendarTest {
 	private static InputStream inputStream;
     private static OutputStream outputStream;
 
@@ -26,7 +22,7 @@ public class LambdaFunctionHandlerTest {
         // TODO: set up your sample input object here.
     	inputStream = null;
     	JSONObject input = new JSONObject();
-    	input.put("date", "2018-10-31");
+    	input.put("date", "2018-10-30");
     	input.put("name", "calendar");
     	inputStream = new ByteArrayInputStream(input.toString().getBytes());
     	
@@ -50,13 +46,9 @@ public class LambdaFunctionHandlerTest {
         handler.handleRequest(inputStream, outputStream, ctx);
         
         JSONObject responseJson = new JSONObject();
-        String responseCode = "200";
+        String responseCode = "400";
 
         responseJson.put("isBase64Encoded", false);
         responseJson.put("statusCode", responseCode);
-        
-        // TODO: validate output here if needed.
-        Assert.assertEquals(responseJson.toString(), outputStream.toString());
     }
 }
-

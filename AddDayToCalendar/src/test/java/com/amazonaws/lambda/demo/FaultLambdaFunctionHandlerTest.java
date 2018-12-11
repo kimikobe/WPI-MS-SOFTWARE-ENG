@@ -7,18 +7,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.json.simple.JSONObject;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.amazonaws.services.lambda.runtime.Context;
 
-/**
- * A simple test harness for locally invoking your Lambda function handler.
- */
-public class LambdaFunctionHandlerTest {
+public class FaultLambdaFunctionHandlerTest {
 
-	private static InputStream inputStream;
+    private static InputStream inputStream;
     private static OutputStream outputStream;
 
     @BeforeClass
@@ -26,9 +22,10 @@ public class LambdaFunctionHandlerTest {
         // TODO: set up your sample input object here.
     	inputStream = null;
     	JSONObject input = new JSONObject();
-    	input.put("date", "2018-10-31");
-    	input.put("name", "calendar");
     	
+    	input.put("date", "");
+    	input.put("name", "calendar2");
+
     	inputStream = new ByteArrayInputStream(input.toString().getBytes());
     }
 
@@ -40,22 +37,19 @@ public class LambdaFunctionHandlerTest {
 
         return ctx;
     }
-
+    
     @Test
-    public void testLambdaFunctionHandler() throws IOException {
+    public void testfaultLambdaFunctionHandler() throws IOException{
     	LambdaFunctionHandler handler = new LambdaFunctionHandler();
-        Context ctx = createContext();
-        
+    	Context ctx = createContext();
+    	
+    	JSONObject responseJson = new JSONObject();
+    	System.out.println("Inside testfaultLambdaFunctionHandler()");
         outputStream = new ByteArrayOutputStream();
-        handler.handleRequest(inputStream, outputStream, ctx);
         
-        JSONObject responseJson = new JSONObject();
-        String responseCode = "200";
-
-        responseJson.put("isBase64Encoded", false);
-        responseJson.put("statusCode", responseCode);
+        responseJson.put("statusCode", "400");
         
-        // TODO: validate output here if needed.
-        Assert.assertEquals(responseJson.toString(), outputStream.toString());
+		handler.handleRequest(inputStream, outputStream, ctx);		
     }
+
 }
