@@ -71,7 +71,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
         writer.close();
     }
     
-    private int validateCalendar(String calendar_name, Context context) throws Exception {
+    int validateCalendar(String calendar_name, Context context) throws Exception {
     	LambdaLogger logger = context.getLogger();
     	int calendarId = -1;
     	
